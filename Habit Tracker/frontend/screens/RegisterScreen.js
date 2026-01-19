@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState('');
@@ -18,21 +19,22 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
+  const { t } = useLanguage();
 
   const handleRegister = async () => {
     // Validation
     if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-      Alert.alert('错误', '请填写所有字段');
+      Alert.alert(t('error'), t('fillAllFields'));
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('错误', '密码长度至少为6个字符');
+      Alert.alert(t('error'), t('passwordMinLength'));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('错误', '两次输入的密码不一致');
+      Alert.alert(t('error'), t('passwordMismatch'));
       return;
     }
 
@@ -41,7 +43,7 @@ export default function RegisterScreen({ navigation }) {
     setLoading(false);
 
     if (!result.success) {
-      Alert.alert('注册失败', result.message || '注册时发生错误');
+      Alert.alert(t('registerFailed'), result.message || t('registrationError'));
     }
   };
 
@@ -52,12 +54,12 @@ export default function RegisterScreen({ navigation }) {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={styles.title}>创建账户</Text>
-          <Text style={styles.subtitle}>开始您的习惯追踪之旅</Text>
+          <Text style={styles.title}>{t('registerTitle')}</Text>
+          <Text style={styles.subtitle}>{t('registerSubtitle')}</Text>
 
           <TextInput
             style={styles.input}
-            placeholder="用户名"
+            placeholder={t('username')}
             placeholderTextColor="#999"
             value={username}
             onChangeText={setUsername}
@@ -67,7 +69,7 @@ export default function RegisterScreen({ navigation }) {
 
           <TextInput
             style={styles.input}
-            placeholder="邮箱"
+            placeholder={t('email')}
             placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
@@ -78,7 +80,7 @@ export default function RegisterScreen({ navigation }) {
 
           <TextInput
             style={styles.input}
-            placeholder="密码（至少6个字符）"
+            placeholder={t('passwordHint')}
             placeholderTextColor="#999"
             value={password}
             onChangeText={setPassword}
@@ -88,7 +90,7 @@ export default function RegisterScreen({ navigation }) {
 
           <TextInput
             style={styles.input}
-            placeholder="确认密码"
+            placeholder={t('confirmPassword')}
             placeholderTextColor="#999"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -102,7 +104,7 @@ export default function RegisterScreen({ navigation }) {
             disabled={loading}
           >
             <Text style={styles.buttonText}>
-              {loading ? '注册中...' : '注册'}
+              {loading ? t('registering') : t('register')}
             </Text>
           </TouchableOpacity>
 
@@ -111,7 +113,7 @@ export default function RegisterScreen({ navigation }) {
             style={styles.linkContainer}
           >
             <Text style={styles.linkText}>
-              已有账户？点击登录
+              {t('hasAccount')}
             </Text>
           </TouchableOpacity>
         </View>

@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function HomeScreen({ navigation }) {
+  const { t } = useLanguage();
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -22,7 +24,7 @@ export default function HomeScreen({ navigation }) {
       setHabits(response.data);
     } catch (error) {
       console.error('Fetch habits error:', error);
-      Alert.alert('错误', '加载习惯列表失败');
+      Alert.alert(t('error'), t('loadingFailed'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -43,11 +45,11 @@ export default function HomeScreen({ navigation }) {
   const handleCheckIn = async (habitId) => {
     try {
       await api.post(`/habits/${habitId}/checkin`);
-      Alert.alert('成功', '打卡成功！');
+      Alert.alert(t('success'), t('checkInSuccess'));
       fetchHabits();
     } catch (error) {
-      const message = error.response?.data?.message || '打卡失败';
-      Alert.alert('错误', message);
+      const message = error.response?.data?.message || t('checkInFailed');
+      Alert.alert(t('error'), message);
     }
   };
 
@@ -61,7 +63,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.habitInfo}>
           <Text style={styles.habitName}>{item.name}</Text>
           <Text style={styles.habitStats}>
-            连续 {item.streak} 天 · 总计 {item.totalCompletions} 次
+            {t('streak')} {item.streak} {t('days')} · {t('total')} {item.totalCompletions} {t('times')}
           </Text>
         </View>
       </View>
@@ -69,7 +71,7 @@ export default function HomeScreen({ navigation }) {
         style={styles.checkInButton}
         onPress={() => handleCheckIn(item._id)}
       >
-        <Text style={styles.checkInButtonText}>打卡</Text>
+        <Text style={styles.checkInButtonText}>{t('checkIn')}</Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -77,7 +79,7 @@ export default function HomeScreen({ navigation }) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>加载中...</Text>
+        <Text>{t('loading')}</Text>
       </View>
     );
   }
@@ -94,8 +96,8 @@ export default function HomeScreen({ navigation }) {
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>还没有习惯</Text>
-            <Text style={styles.emptySubtext}>点击右下角 + 创建你的第一个习惯</Text>
+            <Text style={styles.emptyText}>{t('noHabits')}</Text>
+            <Text style={styles.emptySubtext}>{t('createFirstHabit')}</Text>
           </View>
         }
       />

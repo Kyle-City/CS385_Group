@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Image } from 'react-native';
 
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -13,6 +13,15 @@ import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
+
+// 导入导航栏图标
+const habitClicked = require('./assets/habit_clicked.png');
+const habitUnclicked = require('./assets/habit_unclicked.png');
+const individualClicked = require('./assets/individual_clicked.png');
+const individualUnclicked = require('./assets/individual_unclicked.png');
+const settingClicked = require('./assets/setting_clicked.png');
+const settingUnclicked = require('./assets/setting_unclicked.png');
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +36,8 @@ function AuthStack() {
 }
 
 function MainTabs() {
+  const { t } = useLanguage();
+  
   return (
     <Tab.Navigator
       screenOptions={{
@@ -38,23 +49,49 @@ function MainTabs() {
       <Tab.Screen 
         name="Home" 
         component={HomeScreen}
-        options={{ tabBarLabel: '习惯' }}
+        options={{ 
+          tabBarLabel: t('tabHome'),
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={focused ? habitClicked : habitUnclicked} 
+              style={{ width: 24, height: 24 }} 
+            />
+          )
+        }}
       />
       <Tab.Screen 
         name="Profile" 
         component={ProfileScreen}
-        options={{ tabBarLabel: '我的' }}
+        options={{ 
+          tabBarLabel: t('tabProfile'),
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={focused ? individualClicked : individualUnclicked} 
+              style={{ width: 24, height: 24 }} 
+            />
+          )
+        }}
       />
       <Tab.Screen 
         name="Settings" 
         component={SettingsScreen}
-        options={{ tabBarLabel: '设置' }}
+        options={{ 
+          tabBarLabel: t('tabSettings'),
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={focused ? settingClicked : settingUnclicked} 
+              style={{ width: 24, height: 24 }} 
+            />
+          )
+        }}
       />
     </Tab.Navigator>
   );
 }
 
 function MainStack() {
+  const { t } = useLanguage();
+  
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -65,12 +102,12 @@ function MainStack() {
       <Stack.Screen 
         name="CreateHabit" 
         component={CreateHabitScreen}
-        options={{ title: '创建习惯' }}
+        options={{ title: t('createHabit') }}
       />
       <Stack.Screen 
         name="HabitDetail" 
         component={HabitDetailScreen}
-        options={{ title: '习惯详情' }}
+        options={{ title: t('habitDetail') }}
       />
     </Stack.Navigator>
   );
@@ -106,9 +143,11 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

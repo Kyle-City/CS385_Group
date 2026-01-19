@@ -9,17 +9,19 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogin = async () => {
     // Validation
     if (!email.trim() || !password.trim()) {
-      Alert.alert('错误', '请输入邮箱和密码');
+      Alert.alert(t('error'), t('pleaseEnterEmailPassword'));
       return;
     }
 
@@ -28,7 +30,7 @@ export default function LoginScreen({ navigation }) {
     setLoading(false);
 
     if (!result.success) {
-      Alert.alert('登录失败', result.message || '请检查您的邮箱和密码');
+      Alert.alert(t('loginFailed'), result.message || t('checkEmailPassword'));
     }
   };
 
@@ -38,12 +40,12 @@ export default function LoginScreen({ navigation }) {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>习惯追踪</Text>
-        <Text style={styles.subtitle}>登录您的账户</Text>
+        <Text style={styles.title}>{t('loginTitle')}</Text>
+        <Text style={styles.subtitle}>{t('loginSubtitle')}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="邮箱"
+          placeholder={t('email')}
           placeholderTextColor="#999"
           value={email}
           onChangeText={setEmail}
@@ -54,7 +56,7 @@ export default function LoginScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="密码"
+          placeholder={t('password')}
           placeholderTextColor="#999"
           value={password}
           onChangeText={setPassword}
@@ -68,7 +70,7 @@ export default function LoginScreen({ navigation }) {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? '登录中...' : '登录'}
+            {loading ? t('loggingIn') : t('login')}
           </Text>
         </TouchableOpacity>
 
@@ -77,7 +79,7 @@ export default function LoginScreen({ navigation }) {
           style={styles.linkContainer}
         >
           <Text style={styles.linkText}>
-            还没有账户？点击注册
+            {t('noAccount')}
           </Text>
         </TouchableOpacity>
       </View>

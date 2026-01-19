@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://10.132.100.124:3000';
+const API_BASE_URL = 'http://192.168.167.225:3000';
 
 const AuthContext = createContext({});
 
@@ -52,9 +52,24 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error);
+      let errorMessage = '登录失败';
+      
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+        errorMessage = '无法连接到服务器，请检查后端是否运行';
+      } else if (error.response) {
+        // 服务器返回了错误响应
+        errorMessage = error.response.data?.message || `服务器错误: ${error.response.status}`;
+      } else if (error.request) {
+        // 请求已发送但没有收到响应
+        errorMessage = '服务器无响应，请检查网络连接';
+      } else {
+        errorMessage = error.message || '登录失败';
+      }
+      
       return {
         success: false,
-        message: error.response?.data?.message || '登录失败',
+        message: errorMessage,
       };
     }
   };
@@ -76,9 +91,24 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
+      console.error('Register error:', error);
+      let errorMessage = '注册失败';
+      
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+        errorMessage = '无法连接到服务器，请检查后端是否运行';
+      } else if (error.response) {
+        // 服务器返回了错误响应
+        errorMessage = error.response.data?.message || `服务器错误: ${error.response.status}`;
+      } else if (error.request) {
+        // 请求已发送但没有收到响应
+        errorMessage = '服务器无响应，请检查网络连接';
+      } else {
+        errorMessage = error.message || '注册失败';
+      }
+      
       return {
         success: false,
-        message: error.response?.data?.message || '注册失败',
+        message: errorMessage,
       };
     }
   };

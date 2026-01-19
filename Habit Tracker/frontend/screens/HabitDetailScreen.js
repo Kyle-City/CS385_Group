@@ -9,8 +9,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function HabitDetailScreen({ route, navigation }) {
+  const { t, language } = useLanguage();
   const { habitId } = route.params;
   const [habit, setHabit] = useState(null);
   const [checkins, setCheckins] = useState([]);
@@ -27,7 +29,7 @@ export default function HabitDetailScreen({ route, navigation }) {
       const response = await api.get(`/habits/${habitId}`);
       setHabit(response.data);
     } catch (error) {
-      Alert.alert('错误', '加载习惯详情失败');
+      Alert.alert(t('error'), t('loadingDetailFailed'));
     } finally {
       setLoading(false);
     }
@@ -46,12 +48,12 @@ export default function HabitDetailScreen({ route, navigation }) {
     setCheckingIn(true);
     try {
       await api.post(`/habits/${habitId}/checkin`);
-      Alert.alert('成功', '打卡成功！');
+      Alert.alert(t('success'), t('checkInSuccess'));
       fetchHabitDetails();
       fetchCheckins();
     } catch (error) {
-      const message = error.response?.data?.message || '打卡失败';
-      Alert.alert('错误', message);
+      const message = error.response?.data?.message || t('checkInFailed');
+      Alert.alert(t('error'), message);
     } finally {
       setCheckingIn(false);
     }
@@ -59,21 +61,21 @@ export default function HabitDetailScreen({ route, navigation }) {
 
   const handleDelete = () => {
     Alert.alert(
-      '删除习惯',
-      '确定要删除这个习惯吗？此操作不可撤销。',
+      t('deleteHabit'),
+      t('confirmDeleteHabit'),
       [
-        { text: '取消', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: '删除',
+          text: t('delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await api.delete(`/habits/${habitId}`);
-              Alert.alert('成功', '习惯已删除', [
-                { text: '确定', onPress: () => navigation.goBack() },
+              Alert.alert(t('success'), t('habitDeleted'), [
+                { text: t('confirm'), onPress: () => navigation.goBack() },
               ]);
             } catch (error) {
-              Alert.alert('错误', '删除习惯失败');
+              Alert.alert(t('error'), t('deleteHabitFailed'));
             }
           },
         },
@@ -83,7 +85,8 @@ export default function HabitDetailScreen({ route, navigation }) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', {
+    const locale = language === 'zh' ? 'zh-CN' : 'en-US';
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -101,7 +104,7 @@ export default function HabitDetailScreen({ route, navigation }) {
   if (!habit) {
     return (
       <View style={styles.container}>
-        <Text>习惯不存在</Text>
+        <Text>{t('habitNotExist')}</Text>
       </View>
     );
   }
@@ -121,11 +124,11 @@ export default function HabitDetailScreen({ route, navigation }) {
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>{habit.streak}</Text>
-          <Text style={styles.statLabel}>连续天数</Text>
+          <Text style={styles.statLabel}>{t('continuousDays')}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>{habit.totalCompletions}</Text>
-          <Text style={styles.statLabel}>总完成次数</Text>
+          <Text style={styles.statLabel}>{t('totalCompletions')}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>
@@ -136,19 +139,19 @@ export default function HabitDetailScreen({ route, navigation }) {
               return completionRate > 100 ? '100' : completionRate;
             })()}%
           </Text>
-          <Text style={styles.statLabel}>完成率</Text>
+          <Text style={styles.statLabel}>{t('completionRate')}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>开始日期</Text>
+        <Text style={styles.sectionTitle}>{t('startDate')}</Text>
         <Text style={styles.sectionContent}>
           {formatDate(habit.startDate)}
         </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>打卡记录</Text>
+        <Text style={styles.sectionTitle}>{t('checkInHistory')}</Text>
         {checkins.length > 0 ? (
           <View style={styles.checkinsList}>
             {checkins.slice(0, 10).map((checkin) => (
@@ -160,12 +163,12 @@ export default function HabitDetailScreen({ route, navigation }) {
             ))}
             {checkins.length > 10 && (
               <Text style={styles.moreText}>
-                还有 {checkins.length - 10} 条记录...
+                {t('moreRecords', { count: checkins.length - 10 })}
               </Text>
             )}
           </View>
         ) : (
-          <Text style={styles.emptyText}>还没有打卡记录</Text>
+          <Text style={styles.emptyText}>{t('noCheckInRecord')}</Text>
         )}
       </View>
 
@@ -176,7 +179,7 @@ export default function HabitDetailScreen({ route, navigation }) {
           disabled={checkingIn}
         >
           <Text style={styles.checkInButtonText}>
-            {checkingIn ? '打卡中...' : '今日打卡'}
+            {checkingIn ? t('checkingIn') : t('checkInToday')}
           </Text>
         </TouchableOpacity>
 
@@ -184,7 +187,7 @@ export default function HabitDetailScreen({ route, navigation }) {
           style={styles.deleteButton}
           onPress={handleDelete}
         >
-          <Text style={styles.deleteButtonText}>删除习惯</Text>
+          <Text style={styles.deleteButtonText}>{t('deleteHabit')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

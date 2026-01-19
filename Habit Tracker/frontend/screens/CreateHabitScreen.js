@@ -10,11 +10,13 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 const COLORS = ['#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0', '#00BCD4'];
 const ICONS = ['⭐', '💪', '📚', '🏃', '🎯', '🧘', '💧', '🍎'];
 
 export default function CreateHabitScreen({ navigation }) {
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
@@ -23,7 +25,7 @@ export default function CreateHabitScreen({ navigation }) {
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      Alert.alert('错误', '请输入习惯名称');
+      Alert.alert(t('error'), t('enterHabitName'));
       return;
     }
 
@@ -36,11 +38,11 @@ export default function CreateHabitScreen({ navigation }) {
         icon: selectedIcon,
       });
       
-      Alert.alert('成功', '习惯创建成功！', [
-        { text: '确定', onPress: () => navigation.goBack() },
+      Alert.alert(t('success'), t('habitCreated'), [
+        { text: t('confirm'), onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
-      Alert.alert('错误', error.response?.data?.message || '创建习惯失败');
+      Alert.alert(t('error'), error.response?.data?.message || t('createHabitFailed'));
     } finally {
       setLoading(false);
     }
@@ -53,25 +55,25 @@ export default function CreateHabitScreen({ navigation }) {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={styles.label}>习惯名称 *</Text>
+          <Text style={styles.label}>{t('habitName')} *</Text>
           <TextInput
             style={styles.input}
-            placeholder="例如：每天运动30分钟"
+            placeholder={t('createHabitExample')}
             value={name}
             onChangeText={setName}
           />
 
-          <Text style={styles.label}>描述</Text>
+          <Text style={styles.label}>{t('description')}</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="添加一些描述..."
+            placeholder={t('addDescription')}
             value={description}
             onChangeText={setDescription}
             multiline
             numberOfLines={4}
           />
 
-          <Text style={styles.label}>选择颜色</Text>
+          <Text style={styles.label}>{t('selectColor')}</Text>
           <View style={styles.colorContainer}>
             {COLORS.map((color) => (
               <TouchableOpacity
@@ -86,7 +88,7 @@ export default function CreateHabitScreen({ navigation }) {
             ))}
           </View>
 
-          <Text style={styles.label}>选择图标</Text>
+          <Text style={styles.label}>{t('selectIcon')}</Text>
           <View style={styles.iconContainer}>
             {ICONS.map((icon) => (
               <TouchableOpacity
@@ -103,10 +105,10 @@ export default function CreateHabitScreen({ navigation }) {
           </View>
 
           <View style={styles.preview}>
-            <Text style={styles.previewLabel}>预览</Text>
+            <Text style={styles.previewLabel}>{t('preview')}</Text>
             <View style={[styles.previewCard, { borderLeftColor: selectedColor }]}>
               <Text style={styles.previewIcon}>{selectedIcon}</Text>
-              <Text style={styles.previewName}>{name || '习惯名称'}</Text>
+              <Text style={styles.previewName}>{name || t('habitName')}</Text>
             </View>
           </View>
 
@@ -116,7 +118,7 @@ export default function CreateHabitScreen({ navigation }) {
             disabled={loading}
           >
             <Text style={styles.buttonText}>
-              {loading ? '创建中...' : '创建习惯'}
+              {loading ? t('creating') : t('createHabit')}
             </Text>
           </TouchableOpacity>
         </View>
