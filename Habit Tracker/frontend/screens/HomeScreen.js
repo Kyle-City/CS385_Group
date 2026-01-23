@@ -48,7 +48,14 @@ export default function HomeScreen({ navigation }) {
       Alert.alert(t('success'), t('checkInSuccess'));
       fetchHabits();
     } catch (error) {
-      const message = error.response?.data?.message || t('checkInFailed');
+      let message = t('checkInFailed');
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+        // If it's a check-in interval error, translate it
+        if (error.response.data.daysRemaining !== undefined) {
+          message = t('waitDaysBeforeCheckIn', { days: error.response.data.daysRemaining });
+        }
+      }
       Alert.alert(t('error'), message);
     }
   };
@@ -64,6 +71,9 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.habitName}>{item.name}</Text>
           <Text style={styles.habitStats}>
             {t('streak')} {item.streak} {t('days')} · {t('total')} {item.totalCompletions} {t('times')}
+          </Text>
+          <Text style={styles.habitInterval}>
+            {t('checkinIntervalEvery')} {item.checkinInterval || 1} {item.checkinInterval === 1 ? t('checkinIntervalDay') : t('checkinIntervalDays')}
           </Text>
         </View>
       </View>
@@ -152,6 +162,11 @@ const styles = StyleSheet.create({
   habitStats: {
     fontSize: 14,
     color: '#666',
+  },
+  habitInterval: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
   },
   checkInButton: {
     backgroundColor: '#4CAF50',

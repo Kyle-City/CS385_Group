@@ -35,6 +35,11 @@ const habitSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  checkinInterval: {
+    type: Number,
+    default: 1,
+    min: 1,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

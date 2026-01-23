@@ -11,10 +11,16 @@ router.use(authMiddleware);
 // POST /habits/create
 router.post('/create', async (req, res) => {
   try {
-    const { name, description, color, icon, startDate } = req.body;
+    const { name, description, color, icon, startDate, checkinInterval } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: 'Habit name is required' });
+    }
+
+    // Validate checkinInterval
+    const interval = checkinInterval ? parseInt(checkinInterval) : 1;
+    if (isNaN(interval) || interval < 1) {
+      return res.status(400).json({ message: 'Check-in interval must be at least 1 day' });
     }
 
     const habit = new Habit({
@@ -26,6 +32,7 @@ router.post('/create', async (req, res) => {
       startDate: startDate ? new Date(startDate) : new Date(),
       streak: 0,
       totalCompletions: 0,
+      checkinInterval: interval,
     });
 
     await habit.save();
@@ -151,6 +158,33 @@ router.post('/:id/checkin', async (req, res) => {
 
     if (existingCheckin) {
       return res.status(400).json({ message: 'Already checked in today' });
+    }
+
+    // Check if enough time has passed since last check-in (based on checkinInterval)
+    const checkinInterval = habit.checkinInterval || 1;
+    
+    // Find the last check-in for this habit
+    const lastCheckin = await Checkin.findOne({
+      habitId,
+    }).sort({ date: -1 });
+
+    if (lastCheckin) {
+      // Calculate days since last check-in
+      const lastCheckinDate = new Date(lastCheckin.date);
+      lastCheckinDate.setHours(0, 0, 0, 0);
+      
+      const daysSinceLastCheckin = Math.floor(
+        (today.getTime() - lastCheckinDate.getTime()) / (24 * 60 * 60 * 1000)
+      );
+
+      if (daysSinceLastCheckin < checkinInterval) {
+        const daysRemaining = checkinInterval - daysSinceLastCheckin;
+        return res.status(400).json({ 
+          message: `Please wait ${daysRemaining} more day(s) before checking in again. Check-in interval is ${checkinInterval} day(s).`,
+          daysRemaining,
+          checkinInterval,
+        });
+      }
     }
 
     // Create new check-in (use today's date at start of day for consistency)

@@ -7,6 +7,7 @@ const translations = {
     // 导航栏
     tabHome: '习惯',
     tabProfile: '我的',
+    tabStatistics: '统计',
     tabSettings: '设置',
     
     // 登录注册
@@ -45,6 +46,8 @@ const translations = {
     loadingFailed: '加载习惯列表失败',
     checkInSuccess: '打卡成功！',
     checkInFailed: '打卡失败',
+    checkInTooFrequent: '打卡太频繁，请等待打卡周期后再试',
+    waitDaysBeforeCheckIn: '还需等待 {days} 天后才能打卡',
     streak: '连续',
     days: '天',
     total: '总计',
@@ -63,6 +66,11 @@ const translations = {
     habitCreated: '习惯创建成功！',
     createHabitFailed: '创建习惯失败',
     enterHabitName: '请输入习惯名称',
+    checkinInterval: '打卡周期',
+    checkinIntervalDesc: '每',
+    checkinIntervalDays: '天',
+    checkinIntervalMinError: '打卡周期至少为1天',
+    checkinIntervalInvalid: '请输入有效的天数（整数）',
     
     // 习惯详情
     habitDetail: '习惯详情',
@@ -110,11 +118,34 @@ const translations = {
     version: '版本',
     success: '成功',
     confirm: '确定',
+    
+    // 统计页面
+    weeklyStatistics: '一周打卡统计',
+    weeklyStatisticsDesc: '显示最近一周各习惯的打卡完成率',
+    completionStatistics: '习惯完成率统计',
+    completionStatisticsDesc: '显示各习惯从创建至今的总体完成率',
+    weeklyCheckinRate: '打卡完成率',
+    habitCompletionRate: '习惯完成率',
+    noStatisticsData: '暂无统计数据，快去创建习惯并打卡吧！',
+    legend: '图例说明',
+    legendActualTheoretical: '实际打卡次数/理论上最高打卡次数',
+    legendPercentage: '完成率 = 实际次数 ÷ 理论最高次数 × 100%',
+    
+    // 打卡周期
+    checkinIntervalLabel: '打卡周期',
+    checkinIntervalEvery: '每',
+    checkinIntervalDay: '天',
+    checkinIntervalDays: '天',
+    cannotCheckInYet: '还需等待',
+    daysToCheckIn: '天后才能打卡',
+    checkinIntervalWarning: '该习惯的打卡周期为',
+    days: '天',
   },
   en: {
     // Navigation
     tabHome: 'Habits',
     tabProfile: 'Profile',
+    tabStatistics: 'Statistics',
     tabSettings: 'Settings',
     
     // Login & Register
@@ -153,6 +184,8 @@ const translations = {
     loadingFailed: 'Failed to load habits',
     checkInSuccess: 'Check in successful!',
     checkInFailed: 'Check in failed',
+    checkInTooFrequent: 'Check-in too frequent. Please wait for the check-in interval.',
+    waitDaysBeforeCheckIn: 'Please wait {days} more day(s) before checking in again',
     streak: 'Streak',
     days: 'days',
     total: 'Total',
@@ -171,6 +204,11 @@ const translations = {
     habitCreated: 'Habit created successfully!',
     createHabitFailed: 'Failed to create habit',
     enterHabitName: 'Please enter habit name',
+    checkinInterval: 'Check-in Interval',
+    checkinIntervalDesc: 'Every',
+    checkinIntervalDays: 'days',
+    checkinIntervalMinError: 'Check-in interval must be at least 1 day',
+    checkinIntervalInvalid: 'Please enter a valid number of days (integer)',
     
     // Habit Detail
     habitDetail: 'Habit Detail',
@@ -218,6 +256,28 @@ const translations = {
     version: 'Version',
     success: 'Success',
     confirm: 'OK',
+    
+    // Statistics
+    weeklyStatistics: 'Weekly Check-in Statistics',
+    weeklyStatisticsDesc: 'Show check-in completion rate for each habit in the past week',
+    completionStatistics: 'Habit Completion Statistics',
+    completionStatisticsDesc: 'Show overall completion rate for each habit since creation',
+    weeklyCheckinRate: 'Check-in Completion Rate',
+    habitCompletionRate: 'Habit Completion Rate',
+    noStatisticsData: 'No statistics data yet. Create habits and start checking in!',
+    legend: 'Legend',
+    legendActualTheoretical: 'Actual check-ins / Theoretical maximum check-ins',
+    legendPercentage: 'Completion rate = Actual ÷ Theoretical max × 100%',
+    
+    // Check-in Interval
+    checkinIntervalLabel: 'Check-in Interval',
+    checkinIntervalEvery: 'Every',
+    checkinIntervalDay: 'day',
+    checkinIntervalDays: 'days',
+    cannotCheckInYet: 'Please wait',
+    daysToCheckIn: 'more day(s) before checking in again',
+    checkinIntervalWarning: 'The check-in interval for this habit is',
+    days: 'days',
   },
 };
 

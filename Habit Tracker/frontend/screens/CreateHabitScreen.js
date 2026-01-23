@@ -21,11 +21,17 @@ export default function CreateHabitScreen({ navigation }) {
   const [description, setDescription] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
+  const [checkinInterval, setCheckinInterval] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const handleCreate = async () => {
     if (!name.trim()) {
       Alert.alert(t('error'), t('enterHabitName'));
+      return;
+    }
+
+    if (checkinInterval < 1 || !Number.isInteger(checkinInterval)) {
+      Alert.alert(t('error'), t('checkinIntervalMinError'));
       return;
     }
 
@@ -36,6 +42,7 @@ export default function CreateHabitScreen({ navigation }) {
         description: description.trim(),
         color: selectedColor,
         icon: selectedIcon,
+        checkinInterval: checkinInterval,
       });
       
       Alert.alert(t('success'), t('habitCreated'), [
@@ -46,6 +53,40 @@ export default function CreateHabitScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleIntervalChange = (value) => {
+    // 允许空字符串用于编辑
+    if (value === '') {
+      setCheckinInterval('');
+      return;
+    }
+    const numValue = parseInt(value);
+    // 只接受有效的正整数
+    if (!isNaN(numValue) && numValue >= 1) {
+      setCheckinInterval(numValue);
+    }
+  };
+
+  const handleIntervalBlur = () => {
+    // 如果输入为空或无效，重置为1
+    if (checkinInterval === '' || checkinInterval < 1 || !Number.isInteger(checkinInterval)) {
+      setCheckinInterval(1);
+    }
+  };
+
+  const incrementInterval = () => {
+    setCheckinInterval((prev) => {
+      const current = prev || 1;
+      return current + 1;
+    });
+  };
+
+  const decrementInterval = () => {
+    setCheckinInterval((prev) => {
+      const current = prev || 1;
+      return Math.max(1, current - 1);
+    });
   };
 
   return (
@@ -102,6 +143,35 @@ export default function CreateHabitScreen({ navigation }) {
                 <Text style={styles.iconText}>{icon}</Text>
               </TouchableOpacity>
             ))}
+          </View>
+
+          <Text style={styles.label}>{t('checkinInterval')}</Text>
+          <View style={styles.intervalContainer}>
+            <TouchableOpacity
+              style={styles.intervalButton}
+              onPress={decrementInterval}
+            >
+              <Text style={styles.intervalButtonText}>-</Text>
+            </TouchableOpacity>
+            <View style={styles.intervalInputContainer}>
+              <TextInput
+                style={styles.intervalInput}
+                value={checkinInterval === '' ? '' : checkinInterval.toString()}
+                onChangeText={handleIntervalChange}
+                onBlur={handleIntervalBlur}
+                keyboardType="numeric"
+                selectTextOnFocus
+              />
+              <Text style={styles.intervalLabel}>
+                {t('checkinIntervalDesc')} {checkinInterval || 1} {t('checkinIntervalDays')}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.intervalButton}
+              onPress={incrementInterval}
+            >
+              <Text style={styles.intervalButtonText}>+</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.preview}>
@@ -242,6 +312,47 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  intervalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  intervalButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  intervalButtonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  intervalInputContainer: {
+    flex: 1,
+    marginHorizontal: 15,
+    alignItems: 'center',
+  },
+  intervalInput: {
+    width: 80,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#f9f9f9',
+    marginBottom: 5,
+  },
+  intervalLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
   },
 });
 

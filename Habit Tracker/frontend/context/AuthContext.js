@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.167.225:3000';
+const API_BASE_URL = 'http://10.132.100.124:3000';
 
 const AuthContext = createContext({});
 
@@ -28,8 +28,16 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      await AsyncStorage.removeItem('token');
-      setToken(null);
+      // 如果是网络错误，不清除 token，只清除用户信息
+      // 这样用户可以在网络恢复后继续使用
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+        console.warn('Network error during auth check - server may be offline');
+        // 不清除 token，等待网络恢复
+      } else {
+        // 其他错误（如 token 无效），清除 token
+        await AsyncStorage.removeItem('token');
+        setToken(null);
+      }
       setUser(null);
     } finally {
       setLoading(false);

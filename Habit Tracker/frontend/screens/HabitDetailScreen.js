@@ -52,7 +52,14 @@ export default function HabitDetailScreen({ route, navigation }) {
       fetchHabitDetails();
       fetchCheckins();
     } catch (error) {
-      const message = error.response?.data?.message || t('checkInFailed');
+      let message = t('checkInFailed');
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+        // If it's a check-in interval error, translate it
+        if (error.response.data.daysRemaining !== undefined) {
+          message = t('waitDaysBeforeCheckIn', { days: error.response.data.daysRemaining });
+        }
+      }
       Alert.alert(t('error'), message);
     } finally {
       setCheckingIn(false);
@@ -147,6 +154,13 @@ export default function HabitDetailScreen({ route, navigation }) {
         <Text style={styles.sectionTitle}>{t('startDate')}</Text>
         <Text style={styles.sectionContent}>
           {formatDate(habit.startDate)}
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('checkinIntervalLabel')}</Text>
+        <Text style={styles.sectionContent}>
+          {t('checkinIntervalEvery')} {habit.checkinInterval || 1} {habit.checkinInterval === 1 ? t('checkinIntervalDay') : t('checkinIntervalDays')}
         </Text>
       </View>
 

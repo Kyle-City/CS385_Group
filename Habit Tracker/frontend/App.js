@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ActivityIndicator, View, StyleSheet, Image } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Image, Text } from 'react-native';
 
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -10,6 +10,7 @@ import HomeScreen from './screens/HomeScreen';
 import CreateHabitScreen from './screens/CreateHabitScreen';
 import HabitDetailScreen from './screens/HabitDetailScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import StatisticsScreen from './screens/StatisticsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -69,6 +70,18 @@ function MainTabs() {
               source={focused ? individualClicked : individualUnclicked} 
               style={{ width: 24, height: 24 }} 
             />
+          )
+        }}
+      />
+      <Tab.Screen 
+        name="Statistics" 
+        component={StatisticsScreen}
+        options={{ 
+          tabBarLabel: t('tabStatistics'),
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ fontSize: 24, color: focused ? '#4CAF50' : 'gray' }}>
+              📊
+            </Text>
           )
         }}
       />
